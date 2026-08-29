@@ -299,6 +299,51 @@ def add_demo_steps(slide, sentences):
         )
 
 
+def add_command_steps(slide, steps):
+    """Four rows: one spoken sentence plus the command or console click."""
+    top = 1.58
+    for i, step in enumerate(steps, start=1):
+        y = top + (i - 1) * 1.30
+        add_rect(slide, 0.48, y, 12.36, 1.18, NAVY_CARD, radius=0.08)
+        add_rect(slide, 0.48, y, 1.16, 1.18, PURPLE_DEEP, radius=0.08)
+        add_rect(slide, 0.48, y, 0.10, 1.18, PURPLE)
+        add_textbox(
+            slide,
+            0.48,
+            y + 0.32,
+            1.16,
+            0.56,
+            f"0{i}",
+            size=20,
+            color=WHITE,
+            font=FONT_MONO,
+            bold=True,
+            align=PP_ALIGN.CENTER,
+        )
+        add_textbox(
+            slide,
+            1.86,
+            y + 0.12,
+            10.70,
+            0.36,
+            step["label"],
+            size=13,
+            color=PURPLE_SOFT,
+            font=FONT_UI,
+        )
+        add_textbox(
+            slide,
+            1.86,
+            y + 0.48,
+            10.70,
+            0.58,
+            step["command"],
+            size=13,
+            color=WHITE,
+            font=FONT_MONO,
+        )
+
+
 def add_social_cards(slide, items):
     """Four contact cards — handle + one sentence each."""
     positions = [
@@ -418,38 +463,192 @@ def build():
             "eyebrow": "The map",
             "title": "Architecture we will ship tonight",
             "sentences": [
-                "Clients reach a public HTTPS endpoint, then a load balancer or API Gateway forwards traffic to our container.",
-                "The application runs on managed compute such as App Runner or ECS so we never SSH into a snowflake server.",
-                "State lives in a managed database, and every secret comes from Secrets Manager instead of a committed .env file.",
+                "Clients reach a public HTTPS load balancer, which forwards traffic to our container.",
+                "The application runs on Amazon ECS Express Mode on Fargate, so we never SSH into a snowflake server.",
+                "State lives in Amazon RDS, and every secret comes from Secrets Manager instead of a committed .env file.",
                 "CloudWatch collects logs and metrics so we can see errors before a classmate in the chat reports them.",
             ],
         }
     )
 
-    # 5 — Demo
+    # 5 — Demo map
     slides_spec.append(
         {
             "kind": "demo",
             "eyebrow": "Live demo",
-            "title": "From localhost to a live AWS URL",
+            "title": "Console first, laptop only for code",
             "sentences": [
-                "We start with a working backend on your machine and prove the happy path with a local request you can see.",
-                "We containerize that same service, push the image, and deploy it onto AWS compute without rewriting the business logic.",
-                "We attach a managed database, inject environment values, and expose a public HTTPS URL for the room to hit.",
-                "We call the live endpoint together so you watch the identical API answer from the cloud instead of from localhost.",
+                "Split the screen: PowerShell on the left for your API, and the AWS Console on the right for every cloud service.",
+                "Stay in N. Virginia, zoom the browser, and use curl.exe on Windows because curl is not real curl.",
+                "We pack the same FastAPI app in Docker, store it in ECR, then click Express Mode, Secrets Manager, RDS, and CloudWatch.",
+                "When /health says cloud and /db returns ping 1, the identical API is live in AWS.",
             ],
-            "notes": (
-                "DEMO FLOW\n"
-                "1) Run the API locally and curl /health and a sample route.\n"
-                "2) Build the Docker image and confirm it still serves locally.\n"
-                "3) Push to ECR, deploy to App Runner or ECS, attach RDS or Aurora, load secrets.\n"
-                "4) Open the public URL, replay the same requests, show CloudWatch logs.\n"
-                "Keep this to the four spoken sentences on the slide; use this note as the checklist only."
-            ),
         }
     )
 
-    # 6
+    # 6 — Local + Docker commands
+    slides_spec.append(
+        {
+            "kind": "commands",
+            "eyebrow": "Beats 1 and 2",
+            "title": "Laptop and Docker — PowerShell only",
+            "steps": [
+                {
+                    "label": "Start the API from talks/2026-08-19-backend-to-cloud/demo.",
+                    "command": "python -m pip install -r requirements.txt   then   python -m uvicorn app:app --reload --host 0.0.0.0 --port 8000",
+                },
+                {
+                    "label": "Prove localhost works; /health must show stage local.",
+                    "command": "curl.exe http://localhost:8000/health    curl.exe http://localhost:8000/    curl.exe -X POST http://localhost:8000/echo -H \"Content-Type: application/json\" -d \"{\\\"message\\\":\\\"JKUAT to the cloud\\\"}\"",
+                },
+                {
+                    "label": "Stop uvicorn, then wrap the same app in a container.",
+                    "command": "docker build -t workshop-api .    &&    docker run --rm -p 8000:8000 workshop-api",
+                },
+                {
+                    "label": "Repeat the three curl.exe calls against localhost; the JSON must match.",
+                    "command": "If Docker _ping 500: start Docker Desktop, wait for Engine running, open a new PowerShell.",
+                },
+            ],
+        }
+    )
+
+    # 7 — ECR
+    slides_spec.append(
+        {
+            "kind": "commands",
+            "eyebrow": "Beat 3 · AWS Console",
+            "title": "ECR — store the Docker box",
+            "steps": [
+                {
+                    "label": "Search ECR, then create a private repository named workshop-api.",
+                    "command": "Console: Elastic Container Registry  →  Repositories  →  Create repository  →  Private  →  workshop-api",
+                },
+                {
+                    "label": "Open View push commands and choose the Windows tab.",
+                    "command": "aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin ACCOUNT.dkr.ecr.us-east-1.amazonaws.com",
+                },
+                {
+                    "label": "Tag and push the image you already built.",
+                    "command": "docker tag workshop-api:latest ACCOUNT.dkr.ecr.us-east-1.amazonaws.com/workshop-api:latest    &&    docker push .../workshop-api:latest",
+                },
+                {
+                    "label": "Refresh the repository until tag latest appears.",
+                    "command": "ECR is the warehouse; ECS can only run a box that is stored here.",
+                },
+            ],
+        }
+    )
+
+    # 8 — Secrets + Express Mode
+    slides_spec.append(
+        {
+            "kind": "commands",
+            "eyebrow": "Beats 4 and 5 · AWS Console",
+            "title": "Secrets Manager and ECS Express Mode",
+            "steps": [
+                {
+                    "label": "Store a secret named workshop/api; do not retrieve the value on the projector.",
+                    "command": "Console: Secrets Manager  →  Store a new secret  →  Other type  →  name workshop/api",
+                },
+                {
+                    "label": "Create the service from the ECR image; let the console create both IAM roles.",
+                    "command": "Console: ECS  →  Express mode  →  Create  →  Browse ECR  →  workshop-api  →  latest  →  Create new role × 2",
+                },
+                {
+                    "label": "Open Additional configurations and set the port, health check, and stage.",
+                    "command": "Name workshop-api   ·   Container port 8000   ·   Health check /health   ·   APP_STAGE=cloud   ·   PORT=8000",
+                },
+                {
+                    "label": "Wait until Active, then copy the Application URL.",
+                    "command": "https://workshop-api.ecs.us-east-1.on.aws    —    narrate ALB, Fargate, security groups, CloudWatch on the Timeline",
+                },
+            ],
+        }
+    )
+
+    # 9 — Live test
+    slides_spec.append(
+        {
+            "kind": "commands",
+            "eyebrow": "Beat 6",
+            "title": "Same curls, now on the cloud URL",
+            "steps": [
+                {
+                    "label": "Paste your Application URL into PowerShell.",
+                    "command": "$App = \"https://workshop-api.ecs.us-east-1.on.aws\"",
+                },
+                {
+                    "label": "Replay the three requests; /health must show stage cloud.",
+                    "command": "curl.exe $App/health    curl.exe $App/    curl.exe -X POST $App/echo -H \"Content-Type: application/json\" -d \"{\\\"message\\\":\\\"JKUAT to the cloud\\\"}\"",
+                },
+                {
+                    "label": "Open CloudWatch Logs and refresh after another /health.",
+                    "command": "Console: CloudWatch  →  Logs  →  Log groups  →  newest stream  →  look for GET /health stage=cloud",
+                },
+                {
+                    "label": "That is the punchline: identical routes, different place.",
+                    "command": "If health is unhealthy, the container port is still 80 — change it to 8000 and redeploy.",
+                },
+            ],
+        }
+    )
+
+    # 10 — RDS console
+    slides_spec.append(
+        {
+            "kind": "commands",
+            "eyebrow": "Beat 7 · AWS Console",
+            "title": "RDS PostgreSQL — the filing cabinet",
+            "steps": [
+                {
+                    "label": "Create Postgres in the default VPC; wait until Available.",
+                    "command": "RDS  →  Create database  →  PostgreSQL  →  workshop-db  →  user workshop  →  Public access No  →  SG workshop-db-sg",
+                },
+                {
+                    "label": "Allow only the ECS task security group into port 5432.",
+                    "command": "EC2  →  Security Groups  →  workshop-db-sg  →  Inbound  →  PostgreSQL 5432  →  source = task sg-...   never 0.0.0.0/0",
+                },
+                {
+                    "label": "Put the connection string in Secrets Manager, not in Git.",
+                    "command": "Secret workshop/database-url  =  postgresql://workshop:PASSWORD@ENDPOINT:5432/workshop",
+                },
+                {
+                    "label": "Update Express Mode and inject the secret as DATABASE_URL.",
+                    "command": "Express mode  →  Update  →  Environment variables  →  DATABASE_URL  →  Value type Secret  →  workshop/database-url",
+                },
+            ],
+        }
+    )
+
+    # 11 — Test RDS
+    slides_spec.append(
+        {
+            "kind": "commands",
+            "eyebrow": "Beat 7 · prove it",
+            "title": "How we test that RDS is working",
+            "steps": [
+                {
+                    "label": "RDS console must show Available and an endpoint before any curl.",
+                    "command": "RDS  →  workshop-db  →  Connectivity  →  copy Endpoint   ·   status badge Available",
+                },
+                {
+                    "label": "/health reports whether the task has a working connection.",
+                    "command": "curl.exe $App/health      expect   \"database\":\"connected\"",
+                },
+                {
+                    "label": "GET /db is the real proof: the API runs SELECT 1 inside Postgres.",
+                    "command": "curl.exe $App/db      expect   {\"status\":\"connected\",\"ping\":1,\"database_name\":\"workshop\",\"engine\":\"PostgreSQL\"}",
+                },
+                {
+                    "label": "Confirm in logs and on the RDS graph so beginners see it two more ways.",
+                    "command": "CloudWatch: GET /db status=connected     ·     RDS → Monitoring → Database connections leaves zero",
+                },
+            ],
+        }
+    )
+
+    # 12
     slides_spec.append(
         {
             "kind": "cards",
@@ -584,6 +783,11 @@ def build():
             notes = spec.get("notes")
             if notes:
                 slide.notes_slide.notes_text_frame.text = notes
+
+        elif kind == "commands":
+            add_eyebrow(slide, spec["eyebrow"])
+            add_title(slide, spec["title"])
+            add_command_steps(slide, spec["steps"])
 
         elif kind == "socials":
             add_eyebrow(slide, spec["eyebrow"])
