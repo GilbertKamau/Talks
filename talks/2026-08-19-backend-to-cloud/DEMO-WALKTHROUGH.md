@@ -21,17 +21,19 @@ flowchart LR
     SM[Secrets Manager\nlocked drawer]
     ECS[ECS Express Mode\nruns the box]
     ALB[Load balancer\nfront door]
+    RDS[RDS Postgres\nfiling cabinet]
     CW[CloudWatch\nCCTV logs]
   end
   User[Browser / curl]
   Code --> Box --> ECR --> ECS
   SM -.-> ECS
   ECS --> ALB
+  ECS --> RDS
   ECS --> CW
   User --> ALB
 ```
 
-**Say in one breath:** We write an API, pack it in a Docker box, store the box in ECR, tell ECS to run it, visitors knock on the load balancer, and CloudWatch is the camera that records what happened.
+**Say in one breath:** We write an API, pack it in a Docker box, store the box in ECR, tell ECS to run it, visitors knock on the load balancer, RDS holds data that survives restarts, and CloudWatch is the camera that records what happened.
 
 ---
 
@@ -48,7 +50,7 @@ flowchart LR
 | **VPC + security groups** | Neighbourhood fence + bouncer. | Default VPC is fine. Bouncer only lets web traffic in. |
 | **CloudWatch** | CCTV + guestbook. | We *see* the same curls that hit the live URL. |
 | **ACM** | Free HTTPS name tag on `*.on.aws`. | Padlock in the browser without buying a domain. |
-| **RDS** (optional) | A managed filing cabinet for data. | Skip unless extra time. Tasks die; a database should not. |
+| **RDS** | A managed PostgreSQL filing cabinet. AWS patches and backs it up. | Beat 7. Tasks can be replaced; student data should not vanish. |
 
 App Runner was on the old architecture slide. **New AWS accounts cannot start App Runner.** Express Mode is the replacement — same story, different wizard.
 
@@ -216,13 +218,134 @@ Optional visual: CloudWatch → **Metrics** → `AWS/ApplicationELB` or `AWS/ECS
 
 ---
 
-## Optional — RDS in the Console (filing cabinet)
+## Beat 7 — RDS in the Console (filing cabinet)
 
-Only if you have spare time. **Amazon RDS** → **Create database** → Easy create → PostgreSQL → Free tier if shown.
+**Say:** ECS tasks are disposable. If the box restarts, memory is gone. **RDS** is a managed PostgreSQL database: AWS installs it, patches it, and can take backups. We prove it works with `GET /db`, which runs `SELECT 1` inside Postgres.
 
-**Say:** the API tasks can be replaced; user data cannot. Lock the security group so **only** the ECS tasks talk to port 5432, never `0.0.0.0/0`. Put the master password in Secrets Manager, not in a screenshot.
+Start this create while Express Mode is still provisioning if you can — RDS often takes **8–12 minutes**.
 
-Skip create unless you will **delete** the database before you leave (RDS bills).
+### 7a. Create the database
+
+**Search:** `RDS` → **Amazon RDS** → **Databases** → **Create database**.
+
+| Click | Choose | Why |
+|---|---|---|
+| Creation method | **Standard create** | Easy create hides the network story. |
+| Engine | **PostgreSQL** (leave default version) | Matches the `/db` check in our API. |
+| Templates | **Free tier** if you see it, else **Dev/Test** | Classroom size. |
+| DB instance identifier | `workshop-db` | Name on the list. |
+| Master username | `workshop` | The app login. |
+| Credentials | **Self managed** → type a password once, write it on paper off-screen | This password goes into Secrets Manager, never into Git. |
+| Instance | `db.t4g.micro` or `db.t3.micro` | Smallest that still boots. |
+| Storage | 20 GiB, uncheck autoscaling if shown | Stops surprise bills. |
+| Connectivity / VPC | **default VPC** | Same neighbourhood as ECS. |
+| Public access | **No** | The internet must not open Postgres. ECS in the same VPC still reaches it. |
+| VPC security group | **Create new** named `workshop-db-sg` | We will unlock port 5432 only for ECS. |
+| DB name (Additional config) | `workshop` | `/db` will report this name. |
+
+**Create database.** Status goes **Creating** → wait until **Available**. Do not continue until it is Available.
+
+Open the database. On **Connectivity & security** copy **Endpoint** (looks like `workshop-db.xxxx.us-east-1.rds.amazonaws.com`). Port is **5432**.
+
+### 7b. Let ECS reach Postgres (the bouncer)
+
+**Say:** a security group is a bouncer. RDS should only admit our API boxes, never the whole internet.
+
+1. **ECS** → **Clusters** → `default` → service `workshop-api` → **Tasks** (or **Configuration** / **Networking**) → open a running task → **ENI** / **Network** → copy the **security group** id (`sg-...`). That is the task’s badge.
+2. **EC2** → **Security Groups** → `workshop-db-sg` → **Edit inbound rules** → **Add rule**:
+   - Type: **PostgreSQL**
+   - Port: **5432**
+   - Source: **Custom** → paste the ECS task security group (not `0.0.0.0/0`)
+   - Save
+
+Outbound on the ECS task group is usually already **All traffic**. Leave it.
+
+### 7c. Put the connection string in Secrets Manager
+
+**Search:** Secrets Manager → **Store a new secret** → **Other type of secret**.
+
+Plaintext (or one key `url`) — build this off the projector, then paste:
+
+```text
+postgresql://workshop:YOUR_PASSWORD@YOUR_ENDPOINT:5432/workshop
+```
+
+Secret name: `workshop/database-url` → **Store**.
+
+**Say:** the URL is the key to the filing cabinet. The container will read `DATABASE_URL` from this secret.
+
+### 7d. Point the running API at RDS
+
+You must be on the **new image** that includes `GET /db` (rebuild + ECR **View push commands** if this laptop still has the old image).
+
+**ECS** → **Express mode** → `workshop-api` → **Update** / **Edit**.
+
+**Additional configurations → Environment variables → Add:**
+
+| Key | Value type | Value |
+|---|---|---|
+| `DATABASE_URL` | **Secret** | Choose `workshop/database-url` (or paste its ARN) |
+
+Keep `APP_STAGE=cloud` and `PORT=8000`. Save / deploy. Wait until the service is **Active** again (new task).
+
+---
+
+## How we test that RDS is working
+
+Do these **in order**. If a later check fails, do not skip ahead.
+
+### Test 1 — RDS itself is up (Console)
+
+**RDS** → `workshop-db`
+
+- Status badge is **Available** (not Creating / Backing-up only).
+- Endpoint is visible.
+- **Monitoring** tab: after Test 3, **DatabaseConnections** should leave 0.
+
+If status is not Available, `/db` cannot work yet.
+
+### Test 2 — the API sees a URL (`/health`)
+
+```powershell
+curl.exe "$App/health"
+```
+
+**Working:** `"database":"connected"`  
+**Not wired yet:** `"database":"not-attached"` → secret / env var missing, or old task still running.  
+**Reachable URL but login/network fail:** `"database":"error"` → go to Test 3 for the reason.
+
+### Test 3 — Postgres answers `SELECT 1` (`/db`)
+
+This is the real proof. The API opens a connection and runs `SELECT 1`.
+
+```powershell
+curl.exe "$App/db"
+```
+
+**Working (HTTP 200):**
+
+```json
+{"status":"connected","ping":1,"database_name":"workshop","engine":"PostgreSQL"}
+```
+
+Open that URL in the browser too so the room *sees* it.
+
+| Result | Meaning | Fix |
+|---|---|---|
+| `503` `"not-attached"` | `DATABASE_URL` is not in the task | Add the secret env var, wait for a new task |
+| `502` timeout / could not connect | Bouncer or VPC | Inbound 5432 from the **task** SG; same default VPC; RDS Available |
+| `502` password authentication failed | Wrong URL | Recreate `workshop/database-url`, update service |
+| `502` database "workshop" does not exist | DB name blank at create | Use `/postgres` in the URL or create DB `workshop` |
+
+### Test 4 — CloudWatch saw the query
+
+**CloudWatch** → log stream → look for `GET /db status=connected`.
+
+### Test 5 — RDS Monitoring (visual for beginners)
+
+**RDS** → `workshop-db` → **Monitoring** → **Database connections**. After a few `/db` hits the line should bump above zero.
+
+**One sentence for the room:** if `/db` returns `ping: 1` and CloudWatch shows `GET /db status=connected`, the filing cabinet is live.
 
 ---
 
@@ -233,7 +356,8 @@ Leaving Fargate + a load balancer running costs money.
 1. **ECS** → **Express mode** (or **Clusters** → `default` → service `workshop-api`) → **Delete**.
 2. **ECR** → repository `workshop-api` → **Delete**.
 3. **Secrets Manager** → `workshop/api` → **Delete** (disable recovery if you want it gone today).
-4. If you created RDS → database → **Delete** → skip final snapshot for a workshop.
+4. **RDS** → `workshop-db` → **Actions** → **Delete** → uncheck final snapshot → delete. Do this first if you created it; RDS is the expensive leftover.
+5. **Secrets Manager** → also delete `workshop/database-url`.
 
 IAM roles can stay; they do not charge by the hour.
 
@@ -248,6 +372,8 @@ IAM roles can stay; they do not charge by the hour.
 | ECR push `denied` | Not logged in or wrong region | Region N. Virginia + View push commands again |
 | Express Mode health **unhealthy** | Port not 8000 or path not `/health` | Additional configurations: port `8000`, path `/health` |
 | `/health` still `"stage":"local"` | Missing env var | Edit service, add `APP_STAGE=cloud`, deploy |
+| `/db` is `not-attached` | No `DATABASE_URL` on the new task | Secret env var + wait until a new task is Running |
+| `/db` timeout / 502 | SG or RDS not Available | Available badge + inbound 5432 from task `sg-...` |
 | Blank browser page | Used `http://` | Use the `https://` Application URL |
 
 ---
@@ -258,4 +384,5 @@ IAM roles can stay; they do not charge by the hour.
 2. ECR console + push commands — 10 min  
 3. Secrets Manager — 5 min  
 4. Express Mode wizard + wait — 15 min  
-5. Live URL + CloudWatch — 10 min
+5. Live URL + CloudWatch — 10 min  
+6. RDS create (overlap the wait) + `/db` test — 15 min

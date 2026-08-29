@@ -1,8 +1,10 @@
 """Tiny production-shaped API used in the live demo."""
 
 import os
+import re
 
 from fastapi import FastAPI
+from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 
 app = FastAPI(
@@ -20,17 +22,48 @@ def _log(message: str) -> None:
     print(message, flush=True)
 
 
+def _hide_secrets(text: str) -> str:
+    return re.sub(r":[^:@/]+@", ":***@", text)[:220]
+
+
+def check_database() -> dict:
+    url = os.getenv("DATABASE_URL")
+    if not url:
+        return {"status": "not-attached"}
+    try:
+        import psycopg
+
+        with psycopg.connect(url, connect_timeout=5) as conn:
+            with conn.cursor() as cur:
+                cur.execute("SELECT 1, current_database()")
+                ping, name = cur.fetchone()
+        return {"status": "connected", "ping": ping, "database_name": name, "engine": "PostgreSQL"}
+    except Exception as exc:
+        return {"status": "error", "detail": _hide_secrets(str(exc))}
+
+
 @app.get("/health")
 def health():
+    db = check_database()
     stage = os.getenv("APP_STAGE", "local")
-    _log(f"GET /health stage={stage}")
+    _log(f"GET /health stage={stage} database={db['status']}")
     return {
         "status": "ok",
         "service": "workshop-api",
         "stage": stage,
-        "secret_loaded": bool(os.getenv("WORKSHOP_SECRET")),
-        "database": "configured" if os.getenv("DATABASE_URL") else "not-attached",
+        "secret_loaded": bool(os.getenv("WORKSHOP_SECRET") or os.getenv("DATABASE_URL")),
+        "database": db["status"],
     }
+
+
+@app.get("/db")
+def db_check():
+    result = check_database()
+    _log(f"GET /db status={result['status']}")
+    if result["status"] == "connected":
+        return result
+    code = 503 if result["status"] == "not-attached" else 502
+    return JSONResponse(status_code=code, content=result)
 
 
 @app.get("/")

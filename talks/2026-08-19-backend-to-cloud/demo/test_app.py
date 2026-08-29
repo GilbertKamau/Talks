@@ -27,3 +27,9 @@ def test_echo():
     response = client.post("/echo", json={"message": "ship it"})
     assert response.status_code == 200
     assert response.json() == {"ok": True, "echo": "ship it", "ready_for_aws": True}
+
+
+def test_db_without_url_is_not_attached():
+    response = client.get("/db")
+    assert response.status_code == 503
+    assert response.json()["status"] == "not-attached"
