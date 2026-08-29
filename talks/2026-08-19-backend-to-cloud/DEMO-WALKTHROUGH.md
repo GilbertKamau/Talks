@@ -353,11 +353,10 @@ Open that URL in the browser too so the room *sees* it.
 
 Leaving Fargate + a load balancer running costs money.
 
-1. **ECS** → **Express mode** (or **Clusters** → `default` → service `workshop-api`) → **Delete**.
-2. **ECR** → repository `workshop-api` → **Delete**.
-3. **Secrets Manager** → `workshop/api` → **Delete** (disable recovery if you want it gone today).
-4. **RDS** → `workshop-db` → **Actions** → **Delete** → uncheck final snapshot → delete. Do this first if you created it; RDS is the expensive leftover.
-5. **Secrets Manager** → also delete `workshop/database-url`.
+1. **RDS** → `workshop-db` → **Actions** → **Delete** → uncheck final snapshot. Do this first; it is the costly leftover.
+2. **ECS** → **Express mode** (or **Clusters** → `default` → service `workshop-api`) → **Delete**.
+3. **ECR** → repository `workshop-api` → **Delete**.
+4. **Secrets Manager** → delete `workshop/api` and `workshop/database-url` (disable recovery if you want them gone today).
 
 IAM roles can stay; they do not charge by the hour.
 
