@@ -1,0 +1,8 @@
+{
+  "image": "ACCOUNT_ID.dkr.ecr.AWS_REGION.amazonaws.com/workshop-api:latest",
+  "containerPort": 8000,
+  "environment": [
+    { "name": "APP_STAGE", "value": "cloud" },
+    { "name": "PORT", "value": "8000" }
+  ]
+}
