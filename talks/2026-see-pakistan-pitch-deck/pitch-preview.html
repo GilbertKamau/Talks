@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>[Company name] · pitch preview</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&family=Newsreader:opsz,wght@6..72,600&display=swap" rel="stylesheet" />
+  <style>
+    :root { --ink:#141414; --muted:#5c5c5c; --teal:#0f6e62; --paper:#f7f5f1; --weak:#f8e8ea; --strong:#e4f1f4; }
+    * { box-sizing: border-box; }
+    body { margin:0; font-family:"Instrument Sans",system-ui,sans-serif; background:var(--paper); color:var(--ink); }
+    .wrap { max-width:980px; margin:0 auto; padding:40px 24px 80px; }
+    h1,h2 { font-family:Newsreader,Georgia,serif; }
+    .slide { background:#fff; border:1px solid #e6e6e6; border-radius:18px; padding:28px; margin:18px 0; }
+    .kicker { font-size:12px; letter-spacing:.12em; text-transform:uppercase; color:var(--muted); font-weight:600; }
+    .grid { display:grid; gap:12px; }
+    .two { grid-template-columns:1fr 1fr; }
+    .three { grid-template-columns:1fr 1fr 1fr; }
+    .four { grid-template-columns:repeat(4,1fr); }
+    .card { background:#fafafa; border-radius:12px; padding:16px; }
+    .weak { background:var(--weak); }
+    .strong { background:var(--strong); }
+    .black { background:#111; color:#fff; border-radius:12px; padding:20px; }
+    @media (max-width:800px) { .two,.three,.four { grid-template-columns:1fr; } }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <p class="kicker">Browser preview of YOUR-PITCH-DECK.pptx · PPTX cannot render in this chat</p>
+    <h1>[Company name]</h1>
+    <p>Edit <code>COMPANY</code> in <code>generate_pitch_deck.py</code> and regenerate. Bracketed text is a prompt, not a claim.</p>
+
+    <article class="slide">
+      <div class="kicker">01 Understand</div>
+      <h2>One breath</h2>
+      <div class="card strong"><p>[Customer] uses [product] to [job], so they get [outcome]. Example of strong: Clinic software that brings appointments, EMR, billing and pharmacy into one system.</p></div>
+    </article>
+
+    <article class="slide">
+      <div class="kicker">02 Problem</div>
+      <h2>Pain beats breadth</h2>
+      <p><strong>[Who feels the pain — a specific person, not an industry]</strong></p>
+      <p>[Person] + [painful situation] + [consequence]. Example: Independent clinics manage patient records, billing and inventory across paper registers and disconnected software.</p>
+    </article>
+
+    <article class="slide">
+      <div class="kicker">03 Solution + why now</div>
+      <h2>Transformation</h2>
+      <div class="grid three">
+        <div class="card"><strong>Before</strong><p>Fragmented: paper, email, spreadsheets, disconnected tools.</p></div>
+        <div class="black"><strong>Product</strong><p>[What the product actually is in one line]</p></div>
+        <div class="card strong"><strong>After</strong><p>Integrated: one workflow, one source of truth, a measurable outcome.</p></div>
+      </div>
+      <p><strong>Why now:</strong> [What changed: regulation, behavior, infrastructure, AI, costs, or distribution — and why that makes this timely.]</p>
+    </article>
+
+    <article class="slide">
+      <div class="kicker">04 Market</div>
+      <h2>Believable math</h2>
+      <div class="grid two">
+        <div class="card weak"><strong>Not this</strong><p>$X T &quot;[Huge market slogan]&quot;</p></div>
+        <div class="card strong"><strong>This</strong><p>[40,000 target customers] × [PKR 15K monthly ACV] = [PKR 7.2B annual opportunity]</p><p>[The first segment you can actually acquire this year.]</p></div>
+      </div>
+    </article>
+
+    <article class="slide">
+      <div class="kicker">05 Traction</div>
+      <h2>Evidence</h2>
+      <ul><li>[Paying customers / pilots / revenue / waitlist — one real number]</li><li>[Retention, usage, or a customer quote]</li><li>[Time to value or a before/after metric]</li><li>[If early: evidence of demand, not logos for decoration]</li></ul>
+    </article>
+
+    <article class="slide">
+      <div class="kicker">06 Engine</div>
+      <h2>Who pays · how much · how often</h2>
+      <div class="grid three">
+        <div class="card"><strong>Who pays</strong><p>[The buyer who writes the cheque]</p></div>
+        <div class="card"><strong>How much</strong><p>[Price / unit]</p></div>
+        <div class="card"><strong>How often</strong><p>[Recurring subscription / usage / contract]</p></div>
+      </div>
+      <p>Awareness → Demo → Pilot → Contract → Referral / expansion</p>
+      <p>[How customer #1 becomes customer #1,000 — a repeatable motion, not a hope.]</p>
+    </article>
+
+    <article class="slide">
+      <div class="kicker">07 Competition</div>
+      <h2>Do nothing is a rival</h2>
+      <div class="grid four"><div class="card"><strong>Do nothing</strong><p>Zero switching cost</p></div><div class="card"><strong>[Excel / WhatsApp / status quo]</strong><p>Cheap, familiar, already adopted</p></div><div class="card"><strong>[Legacy tool]</strong><p>Embedded in the current workflow</p></div><div class="card"><strong>[Named competitor]</strong><p>What they actually own</p></div></div>
+      <p>[Why the advantage compounds: distribution, data, workflow lock-in, network effects, brand, or cost.]</p>
+    </article>
+
+    <article class="slide">
+      <div class="kicker">08 Team</div>
+      <h2>Evidence, not job titles</h2>
+      <ul><li>Built [X]</li><li>Scaled [Y]</li><li>Sold to [Z] / industry access: [who]</li><li>Proprietary insight: [what you know from the market]</li></ul>
+    </article>
+
+    <article class="slide">
+      <div class="kicker">09 Ask</div>
+      <h2>Make the next step explicit</h2>
+      <ul>
+        <li>Amount: [Amount being raised]</li>
+        <li>Runway: [Runway this creates]</li>
+        <li>Milestones: [Milestones the round unlocks]</li>
+        <li>What capital changes: [What is different after the money lands]</li>
+        <li>What you want next: [The specific next step you want from this investor]</li>
+      </ul>
+    </article>
+
+    <article class="slide">
+      <div class="kicker">10 Scorecard</div>
+      <h2>Score 0–5 on each, then subtract</h2>
+      <p>Understood quickly · painful problem · clear solution · credible traction · believable market math · clear model · repeatable GTM · defensible advantage · founder-market fit · explicit ask.</p>
+      <p>0–19 rethink · 20–39 refine · 40–50 polish.</p>
+    </article>
+  </div>
+</body>
+</html>

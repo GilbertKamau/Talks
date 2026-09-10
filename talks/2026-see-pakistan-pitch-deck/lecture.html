@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>What the pitch-deck session actually said</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&family=Newsreader:opsz,wght@6..72,500;6..72,600&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --ink: #141414;
+      --muted: #5c5c5c;
+      --line: #e6e6e6;
+      --paper: #f7f5f1;
+      --card: #ffffff;
+      --weak: #f8e8ea;
+      --strong: #e4f1f4;
+      --understand: #0f6e62;
+      --believe: #c45a12;
+      --want: #c4342a;
+      --teal: #1a7a6d;
+    }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; padding: 0; background: var(--paper); color: var(--ink); }
+    body { font-family: "Instrument Sans", system-ui, sans-serif; line-height: 1.45; }
+    .wrap { max-width: 980px; margin: 0 auto; padding: 48px 24px 96px; }
+    header.hero { margin-bottom: 40px; }
+    .kicker { font-size: 12px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); font-weight: 600; }
+    h1 { font-family: Newsreader, Georgia, serif; font-size: clamp(34px, 6vw, 52px); line-height: 1.12; font-weight: 600; margin: 10px 0 16px; }
+    .lede { font-size: 18px; color: var(--muted); max-width: 40rem; }
+    .slide { background: var(--card); border: 1px solid var(--line); border-radius: 18px; padding: 28px 28px 24px; margin: 22px 0; box-shadow: 0 8px 24px rgba(20,20,20,0.04); }
+    .slide h2 { font-family: Newsreader, Georgia, serif; font-size: 28px; margin: 0 0 14px; line-height: 1.2; }
+    .slide h3 { margin: 0 0 8px; font-size: 15px; letter-spacing: 0.04em; text-transform: uppercase; }
+    p, li { font-size: 16px; }
+    .grid { display: grid; gap: 12px; }
+    .grid.three { grid-template-columns: repeat(3, 1fr); }
+    .grid.two { grid-template-columns: 1fr 1fr; }
+    .grid.six { grid-template-columns: repeat(3, 1fr); }
+    .card { border-radius: 12px; padding: 16px; background: #fafafa; border: 1px solid var(--line); }
+    .card.weak { background: var(--weak); border-color: #f0c9cf; }
+    .card.strong { background: var(--strong); border-color: #c5dde3; }
+    .job1 { border-top: 4px solid var(--understand); }
+    .job2 { border-top: 4px solid var(--believe); }
+    .job3 { border-top: 4px solid var(--want); }
+    .flow { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+    .pill { background: #f3f3f3; border-radius: 999px; padding: 8px 12px; font-size: 13px; font-weight: 600; }
+    .arrow { color: var(--muted); }
+    .black-pill { background: #111; color: #fff; border-radius: 10px; padding: 18px 20px; font-weight: 700; }
+    .rule { margin-top: 16px; font-weight: 600; }
+    .quote { font-family: Newsreader, Georgia, serif; font-size: 26px; line-height: 1.25; margin: 0; }
+    .score { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 16px; }
+    .band { flex: 1; min-width: 160px; padding: 10px 12px; border-radius: 8px; font-weight: 700; font-size: 13px; text-align: center; }
+    .rethink { background: var(--weak); }
+    .refine { background: #f6ead3; }
+    .polish { background: #dcefe8; }
+    ol.criteria { columns: 2; gap: 28px; padding-left: 18px; }
+    footer.note { color: var(--muted); font-size: 14px; margin-top: 28px; }
+    a { color: var(--teal); }
+    @media (max-width: 800px) {
+      .grid.three, .grid.two, .grid.six, ol.criteria { grid-template-columns: 1fr; columns: 1; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header class="hero">
+      <div class="kicker">APSUP · SEE Pakistan 2026 · Entrepreneurial Bootcamp</div>
+      <h1>The talk is not about prettier slides. It is about making an investor understand, believe, then want in.</h1>
+      <p class="lede">These photos are from a session on perfecting an investor pitch deck. The running example is clinic software in Pakistan. The rules apply to any company.</p>
+    </header>
+
+    <article class="slide">
+      <div class="kicker">Reality check</div>
+      <h2>Can you tell what this company actually does?</h2>
+      <p class="quote">“Pakistan’s first AI-powered, blockchain-enabled, next-generation healthcare ecosystem.”</p>
+      <p class="rule">That sentence is the villain of the talk. Buzzwords describe ambition. They do not describe a business. If a stranger cannot repeat what you sell after one breath, the rest of the deck is decoration.</p>
+    </article>
+
+    <article class="slide">
+      <div class="kicker">The whole framework</div>
+      <h2>A great pitch deck has only three jobs</h2>
+      <div class="grid three">
+        <div class="card job1">
+          <h3 style="color:var(--understand)">1. Understand</h3>
+          <p><strong>Clarity.</strong> Customer, problem, solution. Make the business obvious in one breath.</p>
+        </div>
+        <div class="card job2">
+          <h3 style="color:var(--believe)">2. Believe</h3>
+          <p><strong>Evidence.</strong> Traction, economics, market, team. Why should this be taken seriously?</p>
+        </div>
+        <div class="card job3">
+          <h3 style="color:var(--want)">3. Want more</h3>
+          <p><strong>Conviction.</strong> Why now, why you, why this can win, and the ask. Why should they lean in today?</p>
+        </div>
+      </div>
+      <p class="rule">If a slide does not strengthen one of these three jobs, question whether it belongs.</p>
+    </article>
+
+    <article class="slide">
+      <div class="kicker">Investor mental model</div>
+      <h2>The investor is silently asking six questions</h2>
+      <div class="grid six">
+        <div class="card"><strong>01</strong><p>Is the problem painful enough?</p></div>
+        <div class="card"><strong>02</strong><p>What exactly have you built?</p></div>
+        <div class="card"><strong>03</strong><p>Why will customers pay?</p></div>
+        <div class="card"><strong>04</strong><p>Can this become very large?</p></div>
+        <div class="card"><strong>05</strong><p>Why will you win?</p></div>
+        <div class="card"><strong>06</strong><p>Why should I believe you?</p></div>
+      </div>
+    </article>
+
+    <article class="slide">
+      <div class="kicker">Story architecture</div>
+      <h2>Stop thinking in slides. Start thinking in a chain of conviction.</h2>
+      <div class="flow">
+        <span class="pill">What? Company + Problem</span><span class="arrow">→</span>
+        <span class="pill">How? Solution</span><span class="arrow">→</span>
+        <span class="pill">Why now? Timing</span><span class="arrow">→</span>
+        <span class="pill">How big? Market</span><span class="arrow">→</span>
+        <span class="pill">Proof? Traction</span><span class="arrow">→</span>
+        <span class="pill">Engine? Model + GTM</span><span class="arrow">→</span>
+        <span class="pill">Why you? Competition + Team</span><span class="arrow">→</span>
+        <span class="pill">Next? Ask</span>
+      </div>
+      <p class="quote" style="margin-top:20px">“Every slide must earn the next slide.”</p>
+      <p>The order can change. The questions cannot.</p>
+    </article>
+
+    <article class="slide">
+      <div class="kicker">Slide 1</div>
+      <h2>Make me understand the company in one breath</h2>
+      <div class="grid two">
+        <div class="card weak">
+          <h3>Weak</h3>
+          <p>Buzzword salad: AI-powered, blockchain-enabled, next-generation ecosystem. The listener still cannot picture a customer doing a job.</p>
+        </div>
+        <div class="card strong">
+          <h3>Strong</h3>
+          <p>Clinic software that brings appointments, EMR, billing and pharmacy into one system.</p>
+          <p><strong>Customer + job + outcome.</strong></p>
+        </div>
+      </div>
+      <p class="rule">Describe the business before describing the ambition.</p>
+    </article>
+
+    <article class="slide">
+      <div class="kicker">Understand</div>
+      <h2>Problem: pain beats breadth</h2>
+      <div class="grid two">
+        <div class="card weak">
+          <h3>Industry language</h3>
+          <p>Weak problem slides list everything wrong with an industry: fragmented, inefficient, expensive, undocumented, outdated.</p>
+        </div>
+        <div class="card strong">
+          <h3>Customer language</h3>
+          <p>Independent clinics manage patient records, billing and inventory across paper registers and disconnected software.</p>
+        </div>
+      </div>
+      <p class="rule">Person + painful situation + consequence. Isolate one painful behavior, not a market rant.</p>
+    </article>
+
+    <article class="slide">
+      <div class="kicker">Understand + want more</div>
+      <h2>Solution: show the transformation, then explain why now</h2>
+      <div class="flow" style="margin: 12px 0 18px">
+        <div class="card" style="flex:1;min-width:160px"><strong>Before</strong><p>Fragmented: paper, email, spreadsheets, disconnected tools.</p></div>
+        <div class="black-pill">Your product</div>
+        <div class="card strong" style="flex:1;min-width:160px"><strong>After</strong><p>Integrated: one workflow, one source of truth, measurable outcome.</p></div>
+      </div>
+      <p><strong>Why now?</strong> What changed — regulation, behavior, infrastructure, AI, costs, distribution — that makes this opportunity unusually timely?</p>
+    </article>
+
+    <article class="slide">
+      <div class="kicker">Believe</div>
+      <h2>Market: replace giant TAM with believable math</h2>
+      <div class="grid two">
+        <div class="card weak">
+          <h3>Top-down</h3>
+          <p style="font-size:32px;margin:8px 0;font-weight:700">$4.5T</p>
+          <p>“Global healthcare market.” Big number. Low information.</p>
+        </div>
+        <div class="card strong">
+          <h3>Bottom-up</h3>
+          <p style="font-size:22px;font-weight:700">40,000 clinics × PKR 15K / month = PKR 7.2B / year</p>
+          <p>Then show the beachhead: the first segment you can actually acquire.</p>
+        </div>
+      </div>
+    </article>
+
+    <article class="slide">
+      <div class="kicker">Engine</div>
+      <h2>Business model + GTM: show the economic engine</h2>
+      <div class="grid three">
+        <div class="card"><h3>Who pays?</h3><p>Name the buyer, not “the market.”</p></div>
+        <div class="card"><h3>How much?</h3><p>Price as a real unit: PKR X / month.</p></div>
+        <div class="card"><h3>How often?</h3><p>Recurring subscription, or whatever the actual cadence is.</p></div>
+      </div>
+      <p class="rule">Then answer the harder question: how does customer #1 become customer #1,000?</p>
+      <div class="flow">
+        <span class="pill">Awareness</span><span class="arrow">→</span>
+        <span class="pill">Demo</span><span class="arrow">→</span>
+        <span class="pill">Pilot</span><span class="arrow">→</span>
+        <span class="pill">Contract</span><span class="arrow">→</span>
+        <span class="pill">Referral / expansion</span>
+      </div>
+    </article>
+
+    <article class="slide">
+      <div class="kicker">Believe + want more</div>
+      <h2>Competition: your biggest rival may be “do nothing”</h2>
+      <p>Do not manufacture a feature table where you win every column.</p>
+      <div class="grid" style="grid-template-columns:repeat(4,1fr)">
+        <div class="card"><strong>Excel</strong><p>Cheap + familiar</p></div>
+        <div class="card"><strong>WhatsApp</strong><p>Already adopted</p></div>
+        <div class="card"><strong>Legacy tool</strong><p>Embedded workflow</p></div>
+        <div class="card"><strong>Do nothing</strong><p>Zero switching cost</p></div>
+      </div>
+      <p class="rule">Your job is not to prove competitors are bad. It is to prove your advantage compounds: distribution, data, workflow lock-in, network effects, brand, cost advantage.</p>
+    </article>
+
+    <article class="slide">
+      <div class="kicker">Want more</div>
+      <h2>Team + ask: prove founder-market fit, then make the next step explicit</h2>
+      <div class="grid two">
+        <div class="card">
+          <h3>Team ≠ biographies</h3>
+          <p>Instead of job titles, show evidence: built X, scaled Y, sold to Z, proprietary insight, industry access, technical capability.</p>
+        </div>
+        <div class="card">
+          <h3>Ask ≠ “strategic investors”</h3>
+          <p>Be specific: amount being raised, runway created, milestones unlocked, what the capital changes, what you want next.</p>
+        </div>
+      </div>
+      <p class="rule">The investor should know why you can win and exactly what happens after this.</p>
+    </article>
+
+    <article class="slide">
+      <div class="kicker">Perfecting the slide</div>
+      <h2>Design is not decoration. Design controls cognitive load.</h2>
+      <div class="grid two">
+        <div class="card"><strong>One idea</strong><p>Per slide.</p></div>
+        <div class="card"><strong>One hero</strong><p>Metric, image, or statement.</p></div>
+        <div class="card"><strong>Short copy</strong><p>Headlines carry the story.</p></div>
+        <div class="card"><strong>Visual proof</strong><p>Screens, charts, customer evidence.</p></div>
+      </div>
+    </article>
+
+    <article class="slide">
+      <div class="kicker">Before you redesign</div>
+      <h2>Score the story before you redesign the deck</h2>
+      <p>Each criterion 0–5. Maximum 50. 0 missing · 1–2 weak · 3 acceptable · 4 strong · 5 exceptional.</p>
+      <ol class="criteria">
+        <li>Business is understood quickly</li>
+        <li>Problem is specific + painful</li>
+        <li>Solution is immediately clear</li>
+        <li>Traction provides credible evidence</li>
+        <li>Market math is believable</li>
+        <li>Business model is clear</li>
+        <li>GTM is repeatable</li>
+        <li>Advantage is defensible</li>
+        <li>Team has founder-market fit</li>
+        <li>Ask is explicit</li>
+      </ol>
+      <div class="score">
+        <div class="band rethink">0–19 rethink the story</div>
+        <div class="band refine">20–39 refine it</div>
+        <div class="band polish">40–50 polish it</div>
+      </div>
+      <p class="rule">Perfecting the deck is mostly subtraction: remove anything that stops the investor from seeing the opportunity.</p>
+    </article>
+
+    <footer class="note">
+      This page is a reconstruction of the photographed lecture so it can be read here. Open
+      <a href="./pitch-preview.html">pitch-preview.html</a> for the fill-in rewrite of an investor deck,
+      or download <code>YOUR-PITCH-DECK.pptx</code> after generating it.
+    </footer>
+  </div>
+</body>
+</html>
